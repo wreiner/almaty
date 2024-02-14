@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FHJ Almaty New</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        table {
+            max-width: 90%;
+            margin: auto;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .ms-teams {
+            background-color: #e8f4fc;
+        }
+        .asynchronous {
+            background-color: #fff9e6;
+        .day-group, .week-group {
+            background-color: #f9f9f9;
+            font-weight: bold;
+            text-align: center;
+        }
+        .week-group {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="table-container">
+        <table>
+            {% for week, days in events_by_week.items() %}
+            <tr class="week-group">
+                <td colspan="4"><strong>Week: {{ week }}</strong></td>
+            </tr>
+            {% for day, events in days.items() %}
+            <tr class="day-group">
+                <td colspan="4">{{ events[0]['start'].strftime('%A, %B %d, %Y') }}</td>
+            </tr>
+            {% for event in events %}
+            <tr>
+                <td>{{ event['summary'] }}</td>
+                <td class="{{ 'ms-teams' if event['location'] == 'MS Teams' else 'asynchronous' if event['location'] == 'Asynchron' else '' }}">{{ event['location'] }}</td>
+                <td>{{ event['start'].strftime('%H:%M') }}</td>
+                <td>{{ event['end'].strftime('%H:%M') }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
