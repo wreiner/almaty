@@ -31,13 +31,15 @@
         }
         .asynchronous {
             background-color: #fff9e6;
-        .day-group, .week-group {
+        }
+        .day-group {
             background-color: #f9f9f9;
             font-weight: bold;
             text-align: center;
         }
-        .week-group {
+        .week-group td {
             background-color: #f0f0f0;
+            text-align: center;
         }
     </style>
 </head>
@@ -46,7 +48,7 @@
         <table>
             {% for week, days in events_by_week.items() %}
             <tr class="week-group">
-                <td colspan="4"><strong>Week: {{ week }}</strong></td>
+                <td colspan="4">Week: {{ week }}</td>
             </tr>
             {% for day, events in days.items() %}
             <tr class="day-group">
