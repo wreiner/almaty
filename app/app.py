@@ -34,23 +34,39 @@ def fetch_calendar(url):
     return cal
 
 def organize_events_by_week(cal):
-    # Get the current time in UTC
-    now = datetime.now(pytz.utc)
+    vienna_tz = pytz.timezone('Europe/Vienna')
+    now = datetime.now().astimezone(vienna_tz)
 
-    # First, filter out past events and sort the remaining ones
-    future_events = [
-        {
-            'summary': str(component.get('summary')),
-            'location': str(component.get('location')),
-            'start': component.get('dtstart').dt,
-            'end': component.get('dtend').dt,
-        }
-        for component in cal.walk('vevent')
-        if component.get('dtend').dt > now  # filter out past events
-    ]
+    future_events = []
+
+    for component in cal.walk('vevent'):
+        start_dt = component.get('dtstart').dt
+        end_dt = component.get('dtend').dt
+
+        # Convert naive datetime objects to timezone-aware objects in Europe/Vienna timezone
+        if start_dt.tzinfo is None or start_dt.tzinfo.utcoffset(start_dt) is None:
+            start_dt = pytz.utc.localize(start_dt).astimezone(vienna_tz)
+        else:
+            start_dt = start_dt.astimezone(vienna_tz)
+
+        if end_dt.tzinfo is None or end_dt.tzinfo.utcoffset(end_dt) is None:
+            end_dt = pytz.utc.localize(end_dt).astimezone(vienna_tz)
+        else:
+            end_dt = end_dt.astimezone(vienna_tz)
+
+        # Filter out past events
+        if end_dt > now:
+            future_events.append({
+                'summary': str(component.get('summary')),
+                'location': str(component.get('location')),
+                'start': start_dt,
+                'end': end_dt,
+            })
+
+    # Sort future events by start datetime
     future_events.sort(key=lambda x: (x['start'].isocalendar()[1], x['start']))
 
-    # Now group by week and then by day within each week
+    # Group by week and then by day within each week
     events_by_week = defaultdict(lambda: defaultdict(list))
     for week, events in groupby(future_events, key=lambda x: x['start'].isocalendar()[1]):
         for event in events:
