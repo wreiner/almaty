@@ -64,18 +64,18 @@ def organize_events_by_week(cal):
             })
 
     # Sort future events by start datetime
-    future_events.sort(key=lambda x: (x['start'].isocalendar()[1], x['start']))
+    future_events.sort(key=lambda x: (x['start'].isocalendar()[0], x['start'].isocalendar()[1], x['start']))
 
-    # Group by week and then by day within each week
+    # Group by year and week, then by day within each week
     events_by_week = defaultdict(lambda: defaultdict(list))
-    for week, events in groupby(future_events, key=lambda x: x['start'].isocalendar()[1]):
+    for (year, week), events in groupby(future_events, key=lambda x: (x['start'].isocalendar()[0], x['start'].isocalendar()[1])):
         for event in events:
             day = event['start'].date()
-            events_by_week[week][day].append(event)
+            events_by_week[(year, week)][day].append(event)
 
     # Sort the days within the weeks
-    for week, days in events_by_week.items():
-        events_by_week[week] = dict(sorted(days.items()))
+    for (year, week), days in events_by_week.items():
+        events_by_week[(year, week)] = dict(sorted(days.items()))
 
     return dict(sorted(events_by_week.items()))
 
