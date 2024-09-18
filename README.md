@@ -8,7 +8,7 @@ A humble webservice offering ICS url in tabular form
 - start the container
 
   ```
-  docker run --name almaty -p 8000:8000 -v /etc/caltab-conf:/etc/caltab-conf -d wreiner/almaty:v0.1
+  docker run --name almaty -p 8000:8000 -v /etc/caltab-conf:/etc/caltab-conf -d wreiner/almaty:v0.2
   ```
 
 ## Reverse proxy for apache2
